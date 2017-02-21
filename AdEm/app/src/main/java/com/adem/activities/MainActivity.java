@@ -1,20 +1,30 @@
-package com.adem;
+package com.adem.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.adem.R;
+import com.adem.controller.ParseJsonLogin;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,15 +32,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -40,6 +41,46 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //keyHash
+
+        /*try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.adem",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }*/
+
+
+        //faebook
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            gotoLoginScreem();
+        } else {
+            AccessToken accesstoken = AccessToken.getCurrentAccessToken();
+            Profile profile = Profile.getCurrentProfile();
+            Log.d("accesstoken",AccessToken.getCurrentAccessToken().getToken());
+            ParseJsonLogin login = new ParseJsonLogin(AccessToken.getCurrentAccessToken(),this);
+            login.setInfoUser();
+
+
+        }
+
+        //navigation
+
+    }
+
+    private void gotoLoginScreem() {
+        Intent intent= new Intent(this, login_facebook.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override
@@ -80,17 +121,19 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_adv_post) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_bussines_manage) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_auto_post) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_management) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_invite_friends) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_logout) {
+            LoginManager.getInstance().logOut();
+            gotoLoginScreem();
 
         }
 
